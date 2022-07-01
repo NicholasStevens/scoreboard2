@@ -2,8 +2,10 @@ import React from "react";
 
 export default function Player(props) {
   return (
-    <div>
-      <p>{props.name}</p>
-    </div>
+    <li className="Player">
+      <p>
+        {props.name} (Score:{props.score})
+      </p>
+    </li>
   );
 }
