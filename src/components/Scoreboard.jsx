@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import Player from "./Player";
 import AddPlayerForm from "./AddPlayerForm";
+import "./Scoreboard.scss";
 
 //sort players by score
 function compare_score(player_a, player_b) {
@@ -34,9 +35,59 @@ export default function Scoreboard() {
     sort_by === "name" ? compare_name : compare_score
   );
 
+  const incrementScore = (id) => {
+    const new_players_array = players.map((player) => {
+      // decide whether this player's score needs to be incremented
+      if (player.id === id) {
+        // and if so, create a new player object,
+        return {
+          // but first copying over the player object's data
+          ...player,
+          // and then overriding the score property to be incremented
+          score: player.score + 1,
+        };
+      } else {
+        // else, just keep them
+        return player;
+      }
+    });
+    set_players(new_players_array);
+  };
+
   //manage input select for sorting players
   const change_sorting = (event) => {
     set_sort_by(event.target.value);
+  };
+
+  const resetScores = () => {
+    const new_players_array = players.map((player) => {
+      return {
+        ...player,
+        score: 0,
+      };
+    });
+    set_players(new_players_array);
+  };
+
+  const randomScores = () => {
+    const new_players_array = players.map((player) => {
+      return {
+        ...player,
+        score: Math.floor(Math.random() * 100 + 1),
+      };
+    });
+    set_players(new_players_array);
+  };
+
+  const addPlayer = (name) => {
+    set_players([
+      ...players,
+      {
+        id: Math.random(),
+        name,
+        score: 0,
+      },
+    ]);
   };
 
   return (
@@ -48,13 +99,21 @@ export default function Scoreboard() {
           <option value="name">Sort by name</option>
         </select>
       </p>
+      <button onClick={resetScores}>Reset Scores</button>
+      <button onClick={randomScores}>Randomize Scores</button>
       <p>Player's Scores:</p>
       <ul>
         {players_sorted.map((player) => (
-          <Player key={player.id} name={player.name} score={player.score} />
+          <Player
+            key={player.id}
+            name={player.name}
+            score={player.score}
+            id={player.id}
+            incrementScore={incrementScore}
+          />
         ))}
       </ul>
-      <AddPlayerForm />
+      <AddPlayerForm addPlayer={addPlayer} />
     </div>
   );
 }
